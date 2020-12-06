@@ -1,0 +1,186 @@
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" General                                                                    "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let mapleader=":"                " Force default mapleader
+set nocompatible                 " Get rid of Vi compatibility mode. SET FIRST!
+set ttyfast                      " Faster refraw
+set encoding=utf-8 nobomb        " Use UTF-8 without BOM
+set mouse=                       " Enable mouse in all modes
+set clipboard=unnamed            " Use the OS clipboard by default (on versions compiled with `+clipboard`)
+set wildmenu                     " Enhance command-line completion
+set nobackup                     " No backup
+set nowritebackup                " No backup
+set noswapfile                   " No swapfile
+set undofile                     " Allow undofiles (undo modifications after vim close)
+set undodir=$HOME/.vim/undofiles " Store undofiles in the same dir
+set autowrite                    " Automatically :write before running commands
+set viminfo+=n~/.vim/viminfo     " Move viminfo path
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Text Formatting/Layout                                                     "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set backspace=indent,eol,start " make backspace delete lots of things
+set autoindent                 " auto-indent
+set tabstop=4                  " tab spacing
+set softtabstop=4              " unify
+set shiftwidth=4               " indent/outdent by X columns
+set shiftround                 " always indent/outdent to the nearest tabstop
+set expandtab                  " use spaces instead of tabs
+set smartindent                " automatically insert one extra level of indentation
+set smarttab                   " use tabs at the start of a line, spaces elsewhere
+set nowrap                     " don't wrap text
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Vim UI                                                                     "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syntax enable             " enable syntax highlighting (previously syntax on)
+set number                " show line numbers
+set numberwidth=5         " make the number gutter X characters wide
+set cursorline            " highlight current line
+set laststatus=2          " last window always has a statusline
+set nohlsearch            " Don't continue to highlight searched phrases.
+set incsearch             " But do highlight as you type your search.
+set ignorecase            " Make searches case-insensitive.
+set ruler                 " Always show info along bottom.
+set showmatch             " Show matching brackets
+set showmode              " Show the current mode
+set scrolloff=3           " Start scrolling three lines before horizontal border of window.
+set sidescrolloff=3       " Start scrolling three columns before vertical border of window.
+set statusline=%<%f\%h%m%r%=%-20.(line=%l\ \ col=%c%V\ \ totlin=%L%)\ \ \%h%m%r%=%-40(bytval=0x%B,%n%Y%)\%P
+
+" Use the Solarized Dark theme
+"let g:solarized_termcolors=256
+"set background=dark
+"colorscheme solarized
+"let g:solarized_termtrans=1
+
+" Use the Tomorrow Night theme
+" colorscheme tomorrow-night
+
+" Use the Tomorrow Night theme
+let g:gruvbox_termcolors=256
+set background=dark
+colorscheme gruvbox
+
+autocmd BufRead,BufNew *.md set filetype=markdown
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""" Colors and Statusline                                                    "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let defaultAccentColor=5
+let colorsAndModes= {
+  \ 'i' : 12,
+  \ 'v' : 6,
+  \ 'V' : 3,
+  \ '' : 1,
+\}
+function! ChangeAccentColor()
+  let accentColor=get(g:colorsAndModes, mode(), g:defaultAccentColor)
+  execute 'hi User1 ctermfg=0 guifg=#000000 ctermbg=' . accentColor
+  execute 'hi User2 ctermbg=0 guibg=#2e3436 ctermfg=' . accentColor
+  execute 'hi User3 ctermfg=0 guifg=#000000 cterm=bold gui=bold ctermbg=' . accentColor
+  execute 'hi TabLineSel ctermfg=0 cterm=bold ctermbg=' . accentColor
+  execute 'hi TabLine ctermbg=0 ctermfg=' . accentColor
+  execute 'hi CursorLineNr ctermfg=' . accentColor
+  return ''
+endfunction
+function! ReadOnly()
+  return (&readonly || !&modifiable) ? 'Read Only ' : ''
+endfunction
+function! Modified()
+  return (&modified) ? 'Modified' : 'Not modified'
+endfunction
+let g:currentmode={
+    \ 'n'  : 'Normal',
+    \ 'no' : 'N·Operator Pending',
+    \ 'v'  : 'Visual',
+    \ 'V'  : 'V·Line',
+    \ '' : 'V·Block',
+    \ 's'  : 'Select',
+    \ 'S'  : 'S·Line',
+    \ '^S' : 'S·Block',
+    \ 'i'  : 'Insert',
+    \ 'R'  : 'Replace',
+    \ 'Rv' : 'VReplace',
+    \ 'c'  : 'Command',
+    \ 'cv' : 'Vim Ex',
+    \ 'ce' : 'Ex',
+    \ 'r'  : 'Prompt',
+    \ 'rm' : 'More',
+    \ 'r?' : 'Confirm',
+    \ '!'  : 'Shell',
+    \ 't'  : 'Terminal',
+\}
+set statusline=
+set statusline+=%{ChangeAccentColor()}
+set statusline+=%1*\ ***%{toupper(g:currentmode[mode()])}***\  " Current mode
+set statusline+=%2*\ %<%F\  " Filepath
+set statusline+=%2*\ %= " To the right
+set statusline+=%2*\ %{toupper((&fenc!=''?&fenc:&enc))}\[%{&ff}] " Encoding & Fileformat
+set statusline+=%2*\ %{Modified()}\ %{ReadOnly()} " Flags
+set statusline+=%1*\ \%l/%L(%P)-%c\  " Position
+" Speed up the redraw
+au InsertLeave * call ChangeAccentColor()
+au CursorHold * let &ro = &ro
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Special functions                                                          "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Trim extra whitespace
+function! StripExtraWhiteSpace()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfunction
+noremap <leader>ss :call StripExtraWhiteSpace()<CR>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Custom keymaps                                                             "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Toggle lines number
+nmap <F2> :set number! number?<CR>
+imap <F2> <C-O><F2>
+set showmode
+
+" Toggle paste mode
+nmap <F3> :set invpaste paste?<CR>
+set pastetoggle=<F3>
+set showmode
+
+" File explorer
+nmap <F4> :Explore<CR>
+set showmode
+
+" Tabs
+nnoremap th  :tabprev<CR>
+nnoremap tj  :tabfirst<CR>
+nnoremap tk  :tablast<CR>
+nnoremap tl  :tabprev<CR>
+nnoremap tt  :tabnew<CR>
+nnoremap tn  :tabnew<CR>
+nnoremap tm  :tabm<Space>
+nnoremap td  :tabclose<CR>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Plugins                                                                    "
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if !empty(glob('~/.vim/autoload/plug.vim'))
+    " Install with :
+    " curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    call plug#begin('~/.vim/plugged')
+    Plug 'ctrlpvim/ctrlp.vim'
+    Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+    Plug 'tomtom/tcomment_vim'
+    Plug 'airblade/vim-gitgutter'
+    Plug 'ervandew/supertab'
+    Plug 'terryma/vim-multiple-cursors'
+    call plug#end()
+    " Options
+    let g:SuperTabMappingTabLiteral = '<s-tab>'
+    let g:SuperTabMappingBackward = '<c-s-a-tab>'
+    " Keybindings
+    map <C-b> :NERDTreeToggle<CR>
+endif
+

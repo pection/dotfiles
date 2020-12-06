@@ -1,0 +1,2 @@
+export LC_POWERLINE=true
+export ZSH_VCS_INFO=true

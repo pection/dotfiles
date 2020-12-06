@@ -1,0 +1,12 @@
+{
+	"commands":
+	{
+		"(.*)\\.php":
+		[
+			"switch-or-run \"chromium-browser.chromium-browser\" chromium-browser",
+			"sleep 0.05 && xdotool key --clearmodifiers ctrl+r",
+			"sleep 0.05 && switch-or-run \"sublime_text.Sublime_text\" subl"
+		]
+	},
+	"enabled": false
+}
