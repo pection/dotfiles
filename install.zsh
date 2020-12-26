@@ -4,7 +4,7 @@ export DOTFILES_PATH=~/.dotfiles/public
 # Clone & config the public repository
 mkdir -p ${DOTFILES_PATH}
 cd ${DOTFILES_PATH}
-git clone --recursive https://github.com/lvancrayelynghe/dotfiles.git .
+git clone --recursive https://github.com/pection/dotfiles.git .
 chmod u+x *.sh
 git config --local user.email "pection.naphat@gmail.com"
 git config --local user.name "Naphat Nithisopa"
